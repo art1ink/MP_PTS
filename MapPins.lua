@@ -714,9 +714,9 @@ u46_overland_base={
 {.569,.616,4405,8,567},
 {.475,.561,4405,9,568}},
 u46_base_cotp={{.401,.524,4405,1,569}},-- wrong layer on PTS
-u46_base_sanguinehdlv={{.464,.604,4405,2,570}},-- wrong layer on PTS
+u46_base_sanguinehdlv={{.464,.604,4405,2,570}},
 u46_carapacecaverns_base={{.706,.785,4405,3,571}},
-u46_base_lostvillage={{.864,.463,4405,4,572}},-- wrong layer on PTS
+u46_base_lostvillage={{.864,.463,4405,4,572}},
 westwealdoverland_base={--Gold Road Provided by art1ink
 {.631,.647,3949,1,546},
 {.154,.561,3949,2,547},
@@ -741,9 +741,9 @@ u42_silorn_base={{.558,.314,3949,11,556}},
 u42_leftwheal_ext2_base={{.384,.286,3949,12,557}},
 u42_windcave_base={{.454,.283,3949,13,558}},
 u42_fyrelightcave_base={{.333,.427,3949,14,559}},
-u42_base_nonungalo={{.437,.3,3949,15,560}},-- wrong layer on PTS
-u42_base_towerbelli={{.498,.654,3949,16,561}},-- wrong layer on PTS
-u42_base_haldain={{.51,.758,3949,17,562}},-- wrong layer on PTS
+u42_base_nonungalo={{.437,.3,3949,15,560}},
+u42_base_towerbelli={{.498,.654,3949,16,561}},
+u42_base_haldain={{.51,.758,3949,17,562}},
 UI_Maps_U42_VarensWall_Ext_0={{.508,.403,3949,18,563}},
 u38_apocrypha_base={--Necrom Provided by art1ink
 {.68,.497,3672,5,532},
@@ -7024,7 +7024,6 @@ local function MapPinAddCallback(i)
 --	pl("Map pin "..i.." updating")
 
 	local subzone = GetMapTileTexture():match("[^\\/]+$"):lower():gsub("%.dds$", ""):gsub("_[0-9]+$", "")
---				string.match(string.gsub(GetMapTileTexture(),"_base[_%w]*",""),"([%w%-_]+).dds$")
 	if MapPinCallback[i] then
 		MapPinCallback[i](i,subzone)
 	elseif i<=4 then
@@ -7872,47 +7871,28 @@ local function OnLoad(eventCode,addonName)
 	SLASH_COMMANDS["/loc"]=function()
 		local x,y=GetMapPlayerPosition("player")
 		local texture = GetMapTileTexture()
-	-- Извлекаем чистое имя файла (без пути) и приводим к нижнему регистру
 	    local fileName = texture:match("[^\\/]+$"):lower()
-	-- Удаляем расширение .dds
-		fileName = fileName:gsub("%.dds$", "")
-	-- Удаляем числовые суффиксы формата _XX в конце имени
-		fileName = fileName:gsub("_[0-9]+$", "")
-		--Дополнительно удаляем _base если оно осталось
-		--fileName = fileName:gsub("_base$", "")
-	-- Форматируем координаты
-	local xStr = string.gsub(math.floor(x*1000)/1000, "^0%.", ".")
-	local yStr = string.gsub(math.floor(y*1000)/1000, "^0%.", ".")
-	StartChatInput(fileName .. '={{'..xStr..','..yStr..','..LastAchivement..'}},')
+			fileName = fileName:gsub("%.dds$", "")
+			fileName = fileName:gsub("_[0-9]+$", "")
+			--fileName = fileName:gsub("_base$", "")
+		local xStr = string.gsub(math.floor(x*1000)/1000, "^0%.", ".")
+		local yStr = string.gsub(math.floor(y*1000)/1000, "^0%.", ".")
+		StartChatInput(fileName .. '={{'..xStr..','..yStr..','..LastAchivement..'}},')
 	end
 	SLASH_COMMANDS["/loc1"]=function()
 		local x,y=GetMapPlayerPosition("player")
 		StartChatInput('{'..string.gsub(math.floor(x*1000)/1000,"[0][.]",".")..","..string.gsub(math.floor(y*1000)/1000,"[0][.]",".")..","..LastAchivement..'},')
 	end
---[[=====удали
 	SLASH_COMMANDS["/loc2"]=function()
-		StartChatInput(string.match(string.gsub(GetMapTileTexture(),"_base[_%w]*",""),"([%w%-_]+).dds$")..'={'..string.gsub(string.format("%.3f,%.3f",GetMapPlayerWaypoint()),"[0][.]",".")..'},')
-	end
-=====удали--]]
-	SLASH_COMMANDS["/loc2"]=function()
-	-- Получаем путь к текстуре карты
-	local texturePath = GetMapTileTexture()
-	-- Извлекаем чистое имя файла (без пути) и приводим к нижнему регистру
-	local fileName = texturePath:match("[^\\/]+$"):lower()
-	-- Удаляем расширение .dds
-	fileName = fileName:gsub("%.dds$", "")
-	-- Удаляем конечные цифровые суффиксы (_X или _XX в конце строки)
-	fileName = fileName:gsub("_[0-9]+$", "")
-	--Дополнительно удаляем _base если оно осталось
-	--fileName = fileName:gsub("_base$", "")
-	-- Получаем координаты точки назначения
-	local x, y = GetMapPlayerWaypoint()
-	-- Форматируем координаты с 3 знаками после запятой
-	local formattedCoords = string.format("%.3f,%.3f", x, y)
-	-- Удаляем ведущий ноль у координат (0.123 -> .123)
-	formattedCoords = formattedCoords:gsub("0%.", ".")
-	-- Формируем и вставляем финальную строку
-	StartChatInput(fileName .. '={' .. formattedCoords .. '},')
+		local texturePath = GetMapTileTexture()
+		local fileName = texturePath:match("[^\\/]+$"):lower()
+			fileName = fileName:gsub("%.dds$", "")
+			fileName = fileName:gsub("_[0-9]+$", "")
+		--fileName = fileName:gsub("_base$", "")
+		local x, y = GetMapPlayerWaypoint()
+		local formattedCoords = string.format("%.3f,%.3f", x, y)
+			formattedCoords = formattedCoords:gsub("0%.", ".")
+		StartChatInput(fileName .. '={' .. formattedCoords .. '},')
 end
 --	SLASH_COMMANDS["/mpdm"]=function() SavedGlobal.dm=not SavedGlobal.dm d("Map Pins developer mode is now "..(SavedGlobal.dm and "Enabled" or "Disabled")) end
 	SLASH_COMMANDS["/pinsize"]=function(n)
