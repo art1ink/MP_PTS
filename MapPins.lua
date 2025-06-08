@@ -714,7 +714,7 @@ u46_overland_base={
 {.569,.616,4405,8,567},
 {.475,.561,4405,9,568}},
 u46_base_cotp={{.401,.524,4405,1,569}},-- wrong layer on PTS
-u42_base_sanguinehdlv={{.464,.604,4405,2,570}},-- wrong layer on PTS
+u46_base_sanguinehdlv={{.464,.604,4405,2,570}},-- wrong layer on PTS
 u46_carapacecaverns_base={{.706,.785,4405,3,571}},
 u46_base_lostvillage={{.864,.463,4405,4,572}},-- wrong layer on PTS
 westwealdoverland_base={--Gold Road Provided by art1ink
@@ -6482,7 +6482,7 @@ local Volendrung={ava_whole={
 {.483,.22,3},	--Border of the Pact and Covenant
 }}
 local ImperialCity={--Provided by remosito
-imperialcity_base={
+imperialcity={
 [76]={--Bosses
 {.658,.383,"Glorgoloch the Destroyer / King Khrogo"},--ARENA
 {.682,.615,"Lady Malygda / Ysenda Resplendent"},--Arboretum
@@ -7023,7 +7023,7 @@ local function MapPinAddCallback(i)
 	UpdatingMapPin[i]=true
 --	pl("Map pin "..i.." updating")
 
-	local subzone=string.match(string.gsub(GetMapTileTexture(),"_base[_%w]*",""),"([%w%-_]+).dds$")
+	local subzone = GetMapTileTexture():match("[^\\/]+$"):lower():gsub("%.dds$", ""):gsub("_[0-9]+$", "")
 --				string.match(string.gsub(GetMapTileTexture(),"_base[_%w]*",""),"([%w%-_]+).dds$")
 	if MapPinCallback[i] then
 		MapPinCallback[i](i,subzone)
@@ -7085,7 +7085,7 @@ local function CompassPinAddCallback(i)
 		return
 	end
 --	pl("Compass pin "..i.." updating")
-	local subzone=string.match(string.gsub(GetMapTileTexture(),"_base[_%w]*",""),"([%w%-_]+).dds$")
+	local subzone = GetMapTileTexture():match("[^\\/]+$"):lower():gsub("%.dds$", ""):gsub("_[0-9]+$", "")
 	if i<=4 then
 		local mapData if (i==3 or i==4) then mapData=SkyShards[subzone] else mapData=Bosses[subzone] end
 		if mapData then
@@ -7277,7 +7277,7 @@ local function OnAchievementUpdate(achievementId,link)
 --[[
 	if MP_dm and achievementId==1824 then
 		local x,y=GetMapPlayerPosition("player") x=math.floor(x*10000)/10000 y=math.floor(y*10000)/10000
-		local subzone=string.match(string.gsub(GetMapTileTexture(),"_base[_%w]*",""),"([%w%-_]+).dds$")
+		local subzone = GetMapTileTexture():match("[^\\/]+$"):lower():gsub("%.dds$", ""):gsub("_[0-9]+$", "")
 		local action,name,blockedNode,isOwned=GetGameCameraInteractableActionInfo()
 		if not The36Lessons[subzone] then
 			d("Book added: "..name)
@@ -7393,7 +7393,7 @@ end
 local function OnQuestAdded(_,_,questName)
 	if GetMapType()~=MAPTYPE_ZONE then return end
 	local x,y,_=GetMapPlayerPosition("player") x=math.floor(x*10000)/10000 y=math.floor(y*10000)/10000
-	local subzone=string.match(string.gsub(GetMapTileTexture(),"_base[_%w]*",""),"([%w%-_]+).dds$")
+	local subzone = GetMapTileTexture():match("[^\\/]+$"):lower():gsub("%.dds$", ""):gsub("_[0-9]+$", "")
 	local function AddQuest()
 		for i=GetNumJournalQuests(),1,-1 do
 			local _questName,_,_,_,_,_,_,_,_,_questType=GetJournalQuestInfo(i)
@@ -7413,7 +7413,7 @@ end
 local function OnInteract(_,result,TargetName)
 	if result~=CLIENT_INTERACT_RESULT_SUCCESS then return end
 	if SavedVars[7] and IsThievesTrove[TargetName] then
-		local zone=string.match(string.gsub(GetMapTileTexture(),"_base[_%w]*",""),"([%w%-_]+).dds$")
+		local zone = GetMapTileTexture():match("[^\\/]+$"):lower():gsub("%.dds$", ""):gsub("_[0-9]+$", "")
 		if zone then
 			local x,y,_=GetMapPlayerPosition("player") x=math.floor(x*10000)/10000 y=math.floor(y*10000)/10000
 			if not CheckThievesTrove(x,y,zone) then
@@ -7424,7 +7424,7 @@ local function OnInteract(_,result,TargetName)
 		end
 	elseif SavedVars[7] and IsChest[TargetName] then
 		ChestsLooted=ChestsLooted+1
-		local zone=string.match(string.gsub(GetMapTileTexture(),"_base[_%w]*",""),"([%w%-_]+).dds$")
+		local zone = GetMapTileTexture():match("[^\\/]+$"):lower():gsub("%.dds$", ""):gsub("_[0-9]+$", "")
 		if zone then
 			local x,y,_=GetMapPlayerPosition("player") x=math.floor(x*10000)/10000 y=math.floor(y*10000)/10000
 			local subzone=(GetMapType()==MAPTYPE_SUBZONE or GetMapContentType()==MAP_CONTENT_DUNGEON)
@@ -7435,7 +7435,7 @@ local function OnInteract(_,result,TargetName)
 			end
 		end
 	elseif SavedVars[15] and IsTimeBreach[TargetName] then
-		local zone=string.match(string.gsub(GetMapTileTexture(),"_base[_%w]*",""),"([%w%-_]+).dds$")
+		local zone = GetMapTileTexture():match("[^\\/]+$"):lower():gsub("%.dds$", ""):gsub("_[0-9]+$", "")
 		if zone then
 			local x,y,_=GetMapPlayerPosition("player") x=math.floor(x*10000)/10000 y=math.floor(y*10000)/10000
 			local delta=0.03
@@ -7869,14 +7869,6 @@ local function OnLoad(eventCode,addonName)
 			AddPinFilter(i)
 		end
 	end
---[[=====удали
---/script StartChatInput(tostring(string.match(GetMapTileTexture(),"([%w%-_]+).dds$")))
-	SLASH_COMMANDS["/loc"]=function()
-		local x,y=GetMapPlayerPosition("player")
---		d(zo_strformat("<<1>>: <<2>>\195\151<<3>>",GetMapName(),("%05.02f"):format(zo_round(x*10000)/100),("%05.02f"):format(zo_round(y*10000)/100) ))
-		StartChatInput(string.match(string.gsub(GetMapTileTexture(),"_base[_%w]*",""),"([%w%-_]+).dds$")..'={{'..string.gsub(math.floor(x*1000)/1000,"[0][.]",".")..","..string.gsub(math.floor(y*1000)/1000,"[0][.]",".")..","..LastAchivement..'}},')
-	end
-=====удали--]]
 	SLASH_COMMANDS["/loc"]=function()
 		local x,y=GetMapPlayerPosition("player")
 		local texture = GetMapTileTexture()
